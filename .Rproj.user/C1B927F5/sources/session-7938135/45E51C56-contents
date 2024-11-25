@@ -1,0 +1,37 @@
+tabla_agua2 <- function(tabla, cod, watershed){
+  
+  eca <- openxlsx::read.xlsx(tabla_agua) %>% 
+    mutate(cuenca = case_when(
+      UNIDAD.HIDROGRÁFICA == "Intercuenca 13155" ~ "INTERCUENCA13155",
+      UNIDAD.HIDROGRÁFICA == "Cuenca Sama" ~ "SAMA",
+      UNIDAD.HIDROGRÁFICA == "Cuenca Locumba" ~ "LOCUMBA",
+      UNIDAD.HIDROGRÁFICA == "Cuenca Caplina" ~ "CAPLINA",
+      UNIDAD.HIDROGRÁFICA == "Cuenca Ushusuma" ~ "USHUSUMA",
+      UNIDAD.HIDROGRÁFICA == "Cuenca Mauri" ~ "MAURI"
+    )) %>% rename("estacion" =  "CÓDIGO.FINAL", "CAT_ECA" = "CLASIFICACÍON.DE.CUERPOS.DE.AGUA") %>%
+    select(cuenca, estacion, ESTE, NORTE, ALTITUD.m.s.n.m., DESCRIPCION , CAT_ECA) %>% 
+    mutate(estacion = if_else(
+      grepl("^RSala", estacion),
+      paste0(estacion, " (",cuenca, ")"),
+      if_else(
+        grepl("^RUshu", estacion),
+        paste0(estacion, " (",cuenca, ")"),
+        estacion)),
+      categoría = case_when(
+        CAT_ECA == "Categoría 1 A2" ~ "C1A2",
+        CAT_ECA == "Categoría 3" ~ "C3D1",
+        CAT_ECA == "Categoría 4" ~ "C4E2"))
+  
+  
+  icarhs <- openxlsx::read.xlsx(eca_icarhs)
+  
+  left_join(tabla, eca, by = c("estacion", "cuenca")) %>% 
+    left_join(icarhs, by = c("categoría", "PARAMETROS" = "parametro")) %>% filter(!is.na(TIPO)) %>% 
+    select(estacion, cuenca, fecha_larga, PARAMETROS, UNIDAD, valor, lower, upper, ESTE, NORTE, categoría) %>% 
+    mutate(Date = as.Date(fecha_larga)) %>% 
+    rename("Variable" = "PARAMETROS", "Value" = "valor",
+           "LowerLimit" = "lower", "UpperLimit" = "upper", "Units" = "UNIDAD") %>% 
+    mutate(DetectionLimit = NA_real_) %>% 
+    filter(estacion == cod & cuenca == watershed) %>% 
+    select(Date, Variable, Value, DetectionLimit, LowerLimit, UpperLimit, Units)
+}

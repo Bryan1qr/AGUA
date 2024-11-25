@@ -1,0 +1,84 @@
+
+# Rayshaser ---------------------------------------------------------------
+devtools::install_github("tylermorganwall/rayshader")
+
+library(rayshader)
+
+#Here, I load a map with the raster package.
+loadzip = tempfile() 
+download.file("https://tylermw.com/data/dem_01.tif.zip", loadzip)
+localtif = raster::raster(unzip(loadzip, "dem_01.tif"))
+unlink(loadzip)
+
+elmat = raster_to_matrix(localtif)
+
+
+plot(elmat)
+
+elmat %>%
+  sphere_shade(texture = "desert") %>%
+  add_water(detect_water(elmat), color = "desert") %>% 
+  plot_map()
+
+
+elmat %>%
+  sphere_shade(texture = "desert") %>%
+  add_water(detect_water(elmat), color = "desert") %>%
+  add_shadow(ray_shade(elmat, zscale = 3), 0.5) %>%
+  add_shadow(ambient_shade(elmat), 0) %>%
+  plot_3d(elmat, zscale = 10, fov = 0, theta = 135, zoom = 0.75, phi = 45, windowsize = c(1000, 800))
+Sys.sleep(0.2)
+render_snapshot()
+
+
+
+# shapes: -----------------------------------------------------------------
+montshadow = ray_shade(montereybay, zscale = 50, lambert = FALSE)
+montamb = ambient_shade(montereybay, zscale = 50)
+
+par(mfrow = c(1, 2)) 
+montereybay %>% 
+  sphere_shade(zscale = 10, texture = "imhof1") %>% 
+  add_shadow(montshadow, 0.5) %>%
+  add_shadow(montamb, 0) %>%
+  plot_3d(montereybay, zscale = 50, fov = 0, theta = -45, phi = 45, windowsize = c(1000, 800), zoom = 0.6,
+          water = TRUE, waterdepth = 0, wateralpha = 0.5, watercolor = "lightblue",
+          waterlinecolor = "white", waterlinealpha = 0.5, baseshape = "circle")
+
+render_snapshot(clear = TRUE)
+
+montereybay %>% 
+  sphere_shade(zscale = 10, texture = "imhof1") %>% 
+  add_shadow(montshadow, 0.5) %>%
+  add_shadow(montamb, 0) %>%
+  plot_3d(montereybay, zscale = 50, fov = 0, theta = -45, phi = 45, windowsize = c(1000, 800), zoom = 0.6,
+          water = TRUE, waterdepth = 0, wateralpha = 0.5, watercolor = "lightblue",
+          waterlinecolor = "white", waterlinealpha = 0.5, baseshape = "hex")
+
+render_snapshot(clear = TRUE)
+
+
+dev.off()
+
+
+
+# Etiquetas ---------------------------------------------------------------
+
+montereybay %>% 
+  sphere_shade(zscale = 10, texture = "imhof1") %>% 
+  add_shadow(montshadow, 0.5) %>%
+  add_shadow(montamb,0) %>%
+  plot_3d(montereybay, zscale = 50, fov = 0, theta = -100, phi = 30, windowsize = c(1000, 800), zoom = 0.6,
+          water = TRUE, waterdepth = 0, waterlinecolor = "white", waterlinealpha = 0.5,
+          wateralpha = 0.5, watercolor = "lightblue")
+render_label(montereybay, x = 350, y = 160, z = 1000, zscale = 50,
+             text = "Moss Landing", textsize = 2, linewidth = 5)
+render_label(montereybay, x = 220, y = 70, z = 7000, zscale = 50,
+             text = "Santa Cruz", textcolor = "darkred", linecolor = "darkred",
+             textsize = 2, linewidth = 5)
+render_label(montereybay, x = 300, y = 270, z = 4000, zscale = 50,
+             text = "Monterey", dashed = TRUE, textsize = 2, linewidth = 5)
+render_label(montereybay, x = 50, y = 270, z = 1000, zscale = 50,  textcolor = "white", linecolor = "white",
+             text = "Monterey Canyon", relativez = FALSE, textsize = 2, linewidth = 5) 
+Sys.sleep(0.2)
+render_snapshot(clear=TRUE)
