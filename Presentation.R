@@ -9,23 +9,34 @@
  # |_|  |_||______||_____/  \____/ |_|  |_||_____|
  #                                                
 
+# RUshu2 (USHUSUMA)
+# RCapl3
+# RCapl1
+# RPist1
+# RSama5
+# RSama2
+# RSama3
+# RSala2 (SAMA)
+# QVila3
+# QVila1
+# RUchu1
 
-source("ICARS_DEF.R")
+
+# QKovi1 ERROR EN LA PAGINA (selecciona parámetros de categoría 3 y compara con eca categoría 4)
+# "RTica2" ERROR EN LA PAGINA (selecciona parámetros de categoría 3 y compara con eca categoría 4)
+# QCari1 NO SE TIENE información de este punto en el periodo 2 de 2019 
+# RMaur3 SE APRECIA UN ERROR SERIO EN EL NIVEL DE SENSIBILIDAD DE LOS ANÁLISIS DE LA VARIABLE PLOMO
+# RMaur4 SE APRECIA UN ERROR SERIO EN EL NIVEL DE SENSIBILIDAD DE LOS ANÁLISIS DE LA VARIABLE PLOMO
+
 library(tidyverse)
+library(wqindex)
+source("ICARS_DEF.R")
+source("data_agua_final.R")
+tabbb <- data_agua2(ruta = "data", tabla_agua = "cuerpos de agua.xlsx", eca_icarhs = "tabla_icarhs.xlsx")
+# tabla <- openxlsx::read.xlsx("data_observatorio_compilado.xlsx")
 
-tab1 <- tabla_agua2(ruta = "minidata",
-                    tabla_agua = "cuerpos de agua.xlsx",
-                    eca_icarhs = "tabla_icarhs.xlsx")
+xd <- tabla_agua2(tabla = tabbb, cod = "RTala1", watershed = "SAMA",
+            tipo = "tabla", subindice = "s2",fecha_inicio = "2016-01-01", fecha_fin = "2019-12-31")
 
-
-test <- tab1 %>% mutate(Date = as.Date(fecha_larga)) %>% 
-  rename("Variable" = "PARAMETROS", "Value" = "valor",
-         "LowerLimit" = "lower", "UpperLimit" = "upper", "Units" = "UNIDAD") %>% 
-  mutate(DetectionLimit = NA_real_) %>% 
-  filter(estacion == "Rcapl1" & cuenca == "CAPLINA") %>% 
-  select(Date, Variable, Value, DetectionLimit, LowerLimit, UpperLimit, Units)
-
-
-calc_wqi(test)  
-  
-                        
+# Para ver una variable:
+# tabbb %>% filter(estacion == "RMaur3" & Variable == "Plomo"& Date > "2016-01-01"& Date<"2019-12-31") %>% View()
