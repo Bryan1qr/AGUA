@@ -9,3 +9,6 @@ df1 <- dataset_agua2(ruta = "data", tabla_agua = "Hojas_datos/cuerpos de agua.xl
 
 
 head(df1)
+
+url <-  "Variables Meteorologicas de las Estaciones automáticas de intercambio internacional - [Servicio Nacional de Meteorología e Hidrología del Perú - SENAMHI]_0.csv"
+SENAMHI <- read.csv(url)
