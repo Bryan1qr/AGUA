@@ -8,6 +8,5 @@ Este repositorio contiene Código en lenguaje R para generar un dataset formado 
 * [EJECUCIÓN DE LOS SCRIPTS DE ICARHS:](https://github.com/Bryan1qr/AGUA/blob/main/EJECUCION_ICARHS.R)
 
 <!--### :earth_americas: **Introducción** -->
-
-> [!IMPORTANTE]
+> [!IMPORTANT]
 > La información actual de este repositorio aún se encuentra siendo validada. Por favor usa estos datos con responsabilidad.
